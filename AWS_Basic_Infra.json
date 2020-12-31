@@ -84,7 +84,9 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": {"Ref": "VPCNAME"}
+						"Value": {
+							"Ref": "VPCNAME"
+						}
 					},
 					{
 						"Key": "CloudFormationStack",
@@ -101,7 +103,17 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": { "Fn::Join" : [ "-", [ {"Ref": "VPCNAME"},"IGW"] ] }
+						"Value": {
+							"Fn::Join": [
+								"-",
+								[
+									{
+										"Ref": "VPCNAME"
+									},
+									"IGW"
+								]
+							]
+						}
 					},
 					{
 						"Key": "CloudFormationStack",
@@ -124,7 +136,17 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": { "Fn::Join" : [ "-", [ {"Ref": "VPCNAME"},"Publicsubnet1"] ] }
+						"Value": {
+							"Fn::Join": [
+								"-",
+								[
+									{
+										"Ref": "VPCNAME"
+									},
+									"Publicsubnet1"
+								]
+							]
+						}
 					},
 					{
 						"Key": "CloudFormationStack",
@@ -147,7 +169,17 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": { "Fn::Join" : [ "-", [ {"Ref": "VPCNAME"},"Publicsubnet2"] ] }
+						"Value": {
+							"Fn::Join": [
+								"-",
+								[
+									{
+										"Ref": "VPCNAME"
+									},
+									"Publicsubnet2"
+								]
+							]
+						}
 					},
 					{
 						"Key": "CloudFormationStack",
@@ -178,7 +210,17 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": { "Fn::Join" : [ "-", [ {"Ref": "VPCNAME"},"routetable"] ] }
+						"Value": {
+							"Fn::Join": [
+								"-",
+								[
+									{
+										"Ref": "VPCNAME"
+									},
+									"routetable"
+								]
+							]
+						}
 					},
 					{
 						"Key": "CloudFormationStack",
@@ -250,7 +292,17 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": { "Fn::Join" : [ "-", [ {"Ref": "VPCNAME"},"securitygroup"] ] }
+						"Value": {
+							"Fn::Join": [
+								"-",
+								[
+									{
+										"Ref": "VPCNAME"
+									},
+									"securitygroup"
+								]
+							]
+						}
 					},
 					{
 						"Key": "CloudFormationStack",
@@ -260,9 +312,39 @@
 					}
 				]
 			}
+		},
+		"WebServer": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"ImageId": "{{resolve:ssm:/orange/CF/AMIID:1}}",
+				"InstanceType": "{{resolve:ssm:/orange/CF/InstanceType:1}}",
+				"KeyName": "{{resolve:ssm:/orange/CF/KeyName:2}}",
+				"Tags": [
+					{
+						"Key": "Name",
+						"Value": "CF-WEBSERVER-1"
+					}
+				],
+				"NetworkInterfaces": [
+					{
+						"AssociatePublicIpAddress": "true",
+						"DeviceIndex": "0",
+						"DeleteOnTermination": "true",
+						"SubnetId": {
+							"Ref": "PublicSubnet"
+						},
+						"GroupSet": [
+							{
+								"Ref": "PublicInstanceSG"
+							}
+						]
+					}
+				]
+			}
 		}
 	},
-	"Outputs": {
+
+"Outputs": {
 		"VPCId": {
 			"Description": "VPCId of the newly created VPC",
 			"Value": {
